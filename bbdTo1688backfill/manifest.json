@@ -1,0 +1,32 @@
+{
+    "name": "bbd-1688快递回填",
+    "description": "1.3修复一个订单号多条物流问题，1.4过滤商品特殊sku问题",
+    "version": "1.4",
+    "manifest_version": 3,
+    "icons": {
+        "16": "icons/icon16.png",
+        "32": "icons/icon32.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "tabs",
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://trade.1688.com/order*"
+            ],
+            "js": [
+                "order.js"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
