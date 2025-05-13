@@ -21,10 +21,19 @@
     "content_scripts": [
         {
             "matches": [
-                "https://weidian.com/user/order-new/searchList?key*"
+                "https://weidian.com/user/order-new/searchList*"
             ],
             "js": [
                 "order.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://weidian.com/user/order-new/logistics.php?oid=*"
+            ],
+            "js": [
+                "search.js"
             ],
             "run_at": "document_end"
         }

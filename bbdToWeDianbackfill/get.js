@@ -1,7 +1,15 @@
 
 try {
 
-
+    function getOwnTextOnly(element) {
+        let text = ''
+        for (const node of element.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                text += node.textContent
+            }
+        }
+        return text.trim().replace(/[()-/:【】]/g, '').replace(/[\s\t\n：]/g, '')
+    }
 
     const iframes = document.querySelectorAll('iframe');
     const iframe = iframes[iframes.length - 1];
@@ -54,18 +62,7 @@ try {
             return item.querySelectorAll('td')[inputIndex]
         })
 
-        // 显示隐藏的查快递element
-        inputBox.forEach((item) => {
-            // 1. 获取目标容器的位置
-            const hoverTrigger = item.querySelector('input')
-            // 2. 创建并触发鼠标进入事件
-            const mouseEnterEvent = new MouseEvent('mouseover', {
-                bubbles: true,    // 允许事件冒泡
-                cancelable: true,
-                view: window
-            });
-            hoverTrigger.dispatchEvent(mouseEnterEvent);
-        })
+
 
         console.log('goods', goods);
 
@@ -73,14 +70,21 @@ try {
         console.log('keyArr', keyArr);
 
         goods.forEach((good, index) => {
+            const goodname = getOwnTextOnly(good.querySelectorAll('td')[goodsIndex].querySelector('.goodsname'))
+
             const sku = good.querySelectorAll('td')[goodsIndex]
-                .querySelectorAll('small')[1]
-                .textContent.replace(/[\s\t\n：]/g, '')
-                .replace(/[:：]/g, '')
+                .querySelectorAll('small')[1].innerHTML.split('<br>')
+                .map(item => item.split(':')[1])
+                .filter(item => item).join(';')
+            // .textContent.split('\n')
+            console.log(sku);
+
+            // .textContent.replace(/[\s\t\n：]/g, '')
+            // .replace(/[:：]/g, '')
             const order = inputBox[index].querySelector('input').value
 
             if (sku && order) {
-                const key = `${order}_${sku}`
+                const key = `${order}_${goodname}_${sku}`
                 keyArr.push(key)
             }
             console.log(666);
@@ -97,7 +101,8 @@ try {
 
             keyArr.forEach(key => {
                 // window.open(`https://weidian.com/user/order-new/searchList?key=${key}`, '_blank');
-                window.open(`https://weidian.com/user/order-new/searchList?key=${key}`, '_blank');
+                // window.open(`https://weidian.com/user/order-new/searchList?key=${key}`, '_blank');
+                window.open(`https://weidian.com/user/order-new/logistics.php?oid=${key.split('_')[0]}&goodname=${key.split('_')[1]}&sku=${key.split('_')[2]}`, '_blank');
             })
             console.log('用户点击了“确定”');
         } else {

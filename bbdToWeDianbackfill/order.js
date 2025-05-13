@@ -1,72 +1,67 @@
 
-const params = new URLSearchParams(window.location.search)
-const key = params.get('key')
-const order = key.split('_')[0]
-const sku = key.split('_')[1]
-console.log(order, sku);
+// const params = new URLSearchParams(window.location.search)
+// const key = params.get('key')
+// const order = key.split('_')[0]
+// const sku = key.split('_')[1]
+// console.log(order, sku);
+
+// function simulateWeidianSearch(keyword) {
+//     const input = document.querySelector('form input[type="search"]')
+//     if (!input) return
+
+//     // React/Vue 受控组件兼容设置值
+//     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+//     nativeInputValueSetter.call(input, keyword)
+
+//     // 触发 input 事件（框架监听的）
+//     input.dispatchEvent(new Event('input', { bubbles: true }))
+
+//     const form = document.querySelector('form')
+//     setTimeout(() => {
+//         form.dispatchEvent(new Event('submit', { bubbles: true }))
+//     }, 1000)
+// }
 
 
-const form = document.querySelector('form')
-const input = document.querySelector('input')
-form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    console.log('🟢 表单提交逻辑执行了！')
-})
-console.log(form, input);
-const enterEvent = new KeyboardEvent('keydown', {
-    key: 'Enter',
-    keyCode: 13,
-    code: 'Enter',
-    bubbles: true
-})
-// input.dispatchEvent(enterEvent)
 
-setTimeout(() => {
-    input.value = order
-    console.log(6666);
-    document.querySelector('form').submit()
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
-    input.dispatchEvent(enterEvent)
-    setTimeout(() => {
-        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
-    }, 2000)
-}, 2000)
-setTimeout(() => {
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
-}, 6000)
-// const fastMailArr = Array.from(document.querySelectorAll('.cell-logistics-info')).map(item => {
-//     return item.querySelectorAll('li')[2].querySelector('span').textContent.trim()
-// })
-// const skutable = Array.from(document.querySelectorAll('.cell-bor-2')).map(item => {
-//     return item.querySelector('tbody')
-// })
+// setTimeout(() => {
+//     simulateWeidianSearch(order)
+//     console.log(6666);
+// }, 1000)
 
-// console.log(order, fastMailArr, skutable);
+// // const fastMailArr = Array.from(document.querySelectorAll('.cell-logistics-info')).map(item => {
+// //     return item.querySelectorAll('li')[2].querySelector('span').textContent.trim()
+// // })
+// // const skutable = Array.from(document.querySelectorAll('.cell-bor-2')).map(item => {
+// //     return item.querySelector('tbody')
+// // })
 
-// let searchmap = {}
-// fastMailArr.forEach((item, index) => {
-//     skutable[index].querySelectorAll('tr').forEach(tr => {
-//         console.log(tr);
-//         const sku = tr.querySelectorAll('td')[3]
-//             .textContent.trim()
-//             .replace(/[\s\t\n：]/g, '')
-//             .replace(/[:：]/g, '')
-//         searchmap[`${order}_${sku}`] = item
-//     })
-// })
-// console.log('searchmap', searchmap);
+// // console.log(order, fastMailArr, skutable);
 
-// Object.keys(searchmap).forEach(key => {
-//     // console.log('key', key);
-//     chrome.storage.local.get([key], function (result) {
-//         console.log('设置', searchmap[key], result, result[key], 'init');
-//         if (result[key] == 'init') {
-//             chrome.storage.local.set({
-//                 [key]: searchmap[key]
+// // let searchmap = {}
+// // fastMailArr.forEach((item, index) => {
+// //     skutable[index].querySelectorAll('tr').forEach(tr => {
+// //         console.log(tr);
+// //         const sku = tr.querySelectorAll('td')[3]
+// //             .textContent.trim()
+// //             .replace(/[\s\t\n：]/g, '')
+// //             .replace(/[:：]/g, '')
+// //         searchmap[`${order}_${sku}`] = item
+// //     })
+// // })
+// // console.log('searchmap', searchmap);
 
-//             })
+// // Object.keys(searchmap).forEach(key => {
+// //     // console.log('key', key);
+// //     chrome.storage.local.get([key], function (result) {
+// //         console.log('设置', searchmap[key], result, result[key], 'init');
+// //         if (result[key] == 'init') {
+// //             chrome.storage.local.set({
+// //                 [key]: searchmap[key]
 
-//         }
-//     })
-// })
+// //             })
+
+// //         }
+// //     })
+// // })
 

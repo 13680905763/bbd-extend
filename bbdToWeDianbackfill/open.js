@@ -3,6 +3,16 @@ try {
     const iframes = document.querySelectorAll('iframe');
     const iframe = iframes[iframes.length - 1];
     // console.log(iframe);
+
+    function getOwnTextOnly(element) {
+        let text = ''
+        for (const node of element.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                text += node.textContent
+            }
+        }
+        return text.trim().replace(/[()-/:【】]/g, '').replace(/[\s\t\n：]/g, '')
+    }
     if (iframe) {
         const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
         // 获取iframe中的元素
@@ -22,13 +32,14 @@ try {
         })
         //过滤掉后剩1688且有订单号和物流单号为空的 商品行
         const goods = Array.from(iframeDocument.querySelectorAll('tr[data-index]')).filter(tr => {
-            const item = tr.querySelectorAll('td')[goodsIndex].querySelectorAll('a')[0].href.includes('1688')
+            const item = tr.querySelectorAll('td')[goodsIndex].querySelectorAll('a')[0].href.includes('weidian')
             return item
         }
         ).filter((tr) => {
             const item = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[3].value
             const hasOrderValue = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[0].value
-            const hasSku = tr.querySelectorAll('td')[goodsIndex].querySelectorAll('small')[1]
+            const hasSku = tr.querySelectorAll('td')[goodsIndex]
+                .querySelectorAll('small')[1]
             return hasOrderValue && !item && hasSku
         }
         )
@@ -60,15 +71,19 @@ try {
                 chrome.storage.local.get(null, (data) => {
                     if (confirm(`已获取${Object.keys(data).length}个商品物流信息信息，确定已打开弹窗`)) {
                         const filterGoods = goods.filter((good, index) => {
+                            const goodname = getOwnTextOnly(good.querySelectorAll('td')[goodsIndex].querySelector('.goodsname'))
+
                             const sku = good.querySelectorAll('td')[goodsIndex]
-                                .querySelectorAll('small')[1]
-                                .textContent.replace(/[\s\t\n：]/g, '')
-                                .replace(/[:：]/g, '')
+                                .querySelectorAll('small')[1].innerHTML.split('<br>')
+                                .map(item => item.split(':')[1])
+                                .filter(item => item).join(';')
                             const order = inputBox[index].querySelector('input').value
                             if (sku && order) {
-                                const key = `${order}_${sku}`
+                                const key = `${order}_${goodname}_${sku}`
+
+
                                 if (data.hasOwnProperty(key)) {
-                                    // console.log('快递号', data[key]);
+                                    console.log('快递号', data[key]);
                                     return true
                                 } else {
                                     return false
@@ -77,6 +92,7 @@ try {
                                 return false
                             }
                         })
+                        console.log('filterGoods', filterGoods);
 
 
 
@@ -86,21 +102,32 @@ try {
                             return item.querySelectorAll('td')[inputIndex]
                         })
 
+                        console.log('filterInputBox', filterInputBox);
 
                         filterGoods.forEach((good, index) => {
-                            const sku = good.querySelectorAll('td')[goodsIndex]
-                                .querySelectorAll('small')[1]
-                                .textContent.replace(/[\s\t\n：]/g, '')
-                                .replace(/[:：]/g, '')
-                            const order = filterInputBox[index].querySelector('input').value
-                            const key = `${order}_${sku}`
-                            const openbtn = filterInputBox[index].querySelectorAll('a')[1]
-                            openbtn.click()
-                            const models = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe'))[index]
-                            // console.log('models', models);
-                            console.log(key, data, data[key]);
+                            try {
+                                const goodname = getOwnTextOnly(good.querySelectorAll('td')[goodsIndex].querySelector('.goodsname'))
 
-                            models.dataset.fastMail = data[key]
+                                const sku = good.querySelectorAll('td')[goodsIndex]
+                                    .querySelectorAll('small')[1].innerHTML.split('<br>')
+                                    .map(item => item.split(':')[1])
+                                    .filter(item => item).join(';')
+                                const order = filterInputBox[index].querySelector('input').value
+                                const key = `${order}_${goodname}_${sku}`
+                                const openbtn = filterInputBox[index].querySelectorAll('a')[1] ?? filterInputBox[index].querySelectorAll('a')[0]
+                                openbtn.click()
+                                console.log('openbtn', openbtn);
+
+                                const models = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe'))[index]
+                                console.log('models', models);
+                                console.log(key, data, data[key]);
+
+                                models.dataset.fastMail = data[key]
+                            } catch (error) {
+                                console.log(error);
+
+                            }
+
                         })
                         console.log('用户点击了“确定”');
                     } else {
