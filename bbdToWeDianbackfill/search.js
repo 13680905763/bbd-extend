@@ -33,7 +33,7 @@ if (tabs.length) {
             console.log('btnmore', btnmore);
             btnmore?.click()
             Array.from(document.querySelectorAll('.logistics_item_seller_left_rig')).forEach(item => {
-                pagegoodname = item.querySelector('h3').textContent.replace(/[()-/:【】_]/g, '').replace(/[\s\t\n：]/g, '')
+                pagegoodname = item.querySelector('h3').textContent.replace(/[()-/:【】_-]/g, '').replace(/[\s\t\n：]/g, '')
                 pagesku = item.querySelector('h6').textContent
                 console.log('pagegoodname', pagegoodname, goodname, pagegoodname === goodname);
                 console.log('pagesku', pagesku, sku, pagesku === sku);

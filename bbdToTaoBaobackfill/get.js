@@ -28,7 +28,6 @@ try {
         // // 筛选商家
         let inputIndex
         let goodsIndex
-        let goodOrderIndex
         const titles = Array.from(iframeDocument.querySelectorAll('th[data-field]'))
         titles.forEach((title, index) => {
             if (title.textContent == '跟踪号/快递公司') {
@@ -44,16 +43,27 @@ try {
 
 
         //过滤掉后剩1688且有订单号和物流单号为空的 商品行
-        const goods = Array.from(iframeDocument.querySelectorAll('tr[data-index]')).filter(tr => {
+        const goods1 = Array.from(iframeDocument.querySelectorAll('tr[data-index]')).filter(tr => {
             const item = tr.querySelectorAll('td')[goodsIndex].querySelectorAll('a')[0].href.includes('taobao')
+            console.log(item);
+
             return item
         }
-        ).filter((tr) => {
+        )
+        console.log('goods1', goods1);
+
+        const goods = goods1.filter((tr) => {
             const item = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[3].value
             const hasOrderValue = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[0].value
             const hasSku = tr.querySelectorAll('td')[goodsIndex]
                 .querySelectorAll('small')[1]
-            return hasOrderValue && !item && hasSku
+
+            console.log(item, hasOrderValue, hasSku);
+
+            if (hasOrderValue && !item && hasSku) {
+                console.log(tr);
+                return true
+            }
         }
         )
 
@@ -101,7 +111,7 @@ try {
             });
         })
 
-        if (confirm(`已获取${keyArr.length}个商品信息，是否进入微店页面获取快递单号`)) {
+        if (confirm(`已获取${keyArr.length}个商品信息，是否进入taobao页面获取快递单号`)) {
 
             keyArr.forEach(key => {
                 // window.open(`https://weidian.com/user/order-new/searchList?key=${key}`, '_blank');

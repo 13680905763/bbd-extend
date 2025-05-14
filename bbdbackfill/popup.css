@@ -1,0 +1,58 @@
+body {
+  text-align: center;
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  gap: 12px;
+  padding: 16px;
+}
+
+.tool-button {
+  /* 基础样式 */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* 颜色方案 */
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+  /* 文字和图标 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 不同按钮的个性颜色 */
+#get {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+}
+
+#open {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3);
+}
+
+#write {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  box-shadow: 0 2px 5px rgba(139, 92, 246, 0.3);
+}
+
+/* 交互效果 */
+.tool-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tool-button:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
