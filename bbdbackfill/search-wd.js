@@ -6,6 +6,7 @@ try {
     const type = params.get('type')
     const key = `${order}_${goodname}_${sku}_${type}`
     console.log('key', key);
+    console.log('keysku', sku);
 
     const tabs = Array.from(document.querySelectorAll('.package'))
     const content = document.querySelector('.deliver_info')
@@ -53,7 +54,10 @@ try {
                 const issku = sku.split('').filter(item => {
                     return pagesku.includes(item)
                 }).length == sku.split('').length
-                console.log(isgoodname, issku);
+                console.log(pagegoodname, goodname);
+                console.log(pagesku, sku);
+
+                console.log('isgoodname', isgoodname, 'issku', issku);
                 if (isgoodname && issku) {
                     console.log('抓取到快递单号', fastMail);
                     chrome.storage.local.set({ [key]: fastMail })

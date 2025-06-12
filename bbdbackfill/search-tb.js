@@ -41,15 +41,22 @@ try {
                     const goodItems = Array.from(document.querySelectorAll('.Content--colStatus--F9DfIjZ')).filter(item => {
                         return item.querySelector('.Section--colStatus--AZq0YyG').textContent.includes('已发货')
                     })
-                    // console.log('goodItems:', goodItems);
+                    console.log('goodItems:', goodItems);
                     try {
                         goodItems.forEach(item => {
-                            const wrp = item.querySelector('.ProductCard--imgWrapper--LOE0M2H').querySelector('div')
+                            console.log('item1', item);
+
+                            const wrp = Array.from(item.querySelectorAll('.ProductCard--proDes--fMqofqf'))
+                            console.log('wrp', wrp);
 
                             const fastMail = item.querySelector('.Content--inlineCopy--K37VC0Q').textContent.replace(/[\s\t\n：]/g, '')
-                            const pagegoodname = wrp.querySelectorAll('div')[0].querySelector('span').textContent
-                            const pagesku = wrp.querySelectorAll('div')[3].querySelector('span').textContent
-                            const pageorder = wrp.querySelectorAll('div')[9].textContent.split(':')[1].replace(/[\s\t\n：]/g, '')
+                            console.log('fastMail', fastMail);
+
+                            const pagegoodname = item.querySelector('.ProductCard--productName--JI6r0s_').textContent
+                            const pagesku = wrp[0].querySelector('span').textContent
+
+                            const pageorder = wrp[3].textContent.split(':')[1].replace(/[\s\t\n：]/g, '')
+                            console.log('pageinfo', pagegoodname, pagesku, pageorder);
 
                             const isgoodname = goodname.split('').filter(item => {
                                 return pagegoodname.includes(item)
@@ -58,7 +65,7 @@ try {
                                 return pagesku.includes(item)
                             }).length == sku.split('').length
                             const isorder = order == pageorder
-                            // console.log(isgoodname, issku, isorder);
+                            console.log('isgoodname', isgoodname, 'issku', issku, 'isorder', isorder);
                             if (isorder && isgoodname && issku) {
                                 console.log('抓取到快递单号', fastMail);
                                 chrome.storage.local.set({ [key]: fastMail })

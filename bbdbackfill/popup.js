@@ -2,6 +2,7 @@ document.getElementById('get').addEventListener('click', () => {
   const urlPatterns = [
     'https://baobaoda.dev.1buyo.com/admin/order*',
     'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
     // 添加更多 URL 模式
   ];
   injectScriptToMatchingTabs('get.js', urlPatterns);
@@ -10,6 +11,8 @@ document.getElementById('open').addEventListener('click', () => {
   const urlPatterns = [
     'https://baobaoda.dev.1buyo.com/admin/order*',
     'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
+
     // 添加更多 URL 模式
   ];
   injectScriptToMatchingTabs('open.js', urlPatterns);
@@ -18,6 +21,8 @@ document.getElementById('write').addEventListener('click', () => {
   const urlPatterns = [
     'https://baobaoda.dev.1buyo.com/admin/order*',
     'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
+
     // 添加更多 URL 模式
   ];
   injectScriptToMatchingTabs('write.js', urlPatterns);
@@ -26,6 +31,7 @@ document.getElementById('check').addEventListener('click', () => {
   const urlPatterns = [
     'https://baobaoda.dev.1buyo.com/admin/order*',
     'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
     // 添加更多 URL 模式
   ];
   injectScriptToMatchingTabs('check.js', urlPatterns);

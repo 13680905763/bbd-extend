@@ -80,12 +80,31 @@ try {
             if (confirm(`共获取${keyArr.length}个可查商品信息，是否进入查找页面获取快递单号`)) {
                 keyArr.forEach(key => {
                     const type = key.split('_')[3]
+
                     if (type == '1688') {
-                        window.open(`https://trade.1688.com/order/buyer_order_print.htm?order_id=${key.split('_')[0]}&goodname=${key.split('_')[1]}&sku=${key.split('_')[2]}&type=${type}`, '_blank');
+                        const params = new URLSearchParams({
+                            order_id: key.split('_')[0],
+                            goodname: key.split('_')[1],
+                            sku: key.split('_')[2],
+                            type
+                        });
+                        window.open(`https://trade.1688.com/order/buyer_order_print.htm?${params.toString()}`, '_blank');
                     } else if (type == 'tb') {
-                        window.open(`https://distributor.taobao.global/apps/order/list?order=${key.split('_')[0]}&goodname=${key.split('_')[1]}&sku=${key.split('_')[2]}&type=${type}`, '_blank');
+                        const params = new URLSearchParams({
+                            order: key.split('_')[0],
+                            goodname: key.split('_')[1],
+                            sku: key.split('_')[2],
+                            type
+                        });
+                        window.open(`https://distributor.taobao.global/apps/order/list?${params.toString()}`, '_blank');
                     } else if (type == 'wd') {
-                        window.open(`https://weidian.com/user/order-new/logistics.php?oid=${key.split('_')[0]}&goodname=${key.split('_')[1]}&sku=${key.split('_')[2]}&type=${type}`, '_blank');
+                        const params = new URLSearchParams({
+                            oid: key.split('_')[0],
+                            goodname: key.split('_')[1],
+                            sku: key.split('_')[2],
+                            type
+                        });
+                        window.open(`https://weidian.com/user/order-new/logistics.php?${params.toString()}`, '_blank');
                     }
                 })
                 console.log('用户点击了“确定”');

@@ -30,6 +30,15 @@
         },
         {
             "matches": [
+                "https://air.1688.com/app/ctf-page/vm-seller-print/buyer-order-print.html*"
+            ],
+            "js": [
+                "search-1688.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
                 "https://distributor.taobao.global/apps/order/list?order*"
             ],
             "js": [
