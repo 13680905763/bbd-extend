@@ -1,6 +1,6 @@
 {
-    "name": "bbd-快递回填",
-    "description": "1.0",
+    "name": "Automatic-order",
+    "description": "自动下单未采购商品",
     "version": "1.0",
     "manifest_version": 3,
     "icons": {
@@ -18,40 +18,36 @@
         "tabs",
         "storage"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "content_scripts": [
         {
             "matches": [
-                "https://trade.1688.com/order*"
+                "https://item.taobao.com/item.htm*",
+                "https://detail.tmall.com/item.htm*"
             ],
             "js": [
-                "search-1688.js"
+                "buy.js"
             ],
             "run_at": "document_end"
         },
         {
             "matches": [
-                "https://air.1688.com/app/ctf-page/vm-seller-print/buyer-order-print.html*"
+                "https://buy.taobao.com/auction/buy_now.jhtml*",
+                "https://buy.tmall.com/order/confirm_order.htm*"
             ],
             "js": [
-                "search-1688.js"
+                "submit.js"
             ],
             "run_at": "document_end"
         },
         {
             "matches": [
-                "https://distributor.taobao.global/apps/order/list?order*"
+                "https://err.tmall.com/error1.html*"
             ],
             "js": [
-                "search-tb.js"
-            ],
-            "run_at": "document_end"
-        },
-        {
-            "matches": [
-                "https://weidian.com/user/order-new/logistics.php?oid=*"
-            ],
-            "js": [
-                "search-wd.js"
+                "error.js"
             ],
             "run_at": "document_end"
         }

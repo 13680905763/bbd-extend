@@ -1,6 +1,6 @@
 {
-    "name": "bbd-WeDian快递回填",
-    "description": "1.0",
+    "name": "快递单号回填插件",
+    "description": "bbd后台批量回填快递单号",
     "version": "1.0",
     "manifest_version": 3,
     "icons": {
@@ -21,10 +21,28 @@
     "content_scripts": [
         {
             "matches": [
-                "https://weidian.com/user/order-new/searchList*"
+                "https://trade.1688.com/order*"
             ],
             "js": [
-                "order.js"
+                "search-1688.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://air.1688.com/app/ctf-page/vm-seller-print/buyer-order-print.html*"
+            ],
+            "js": [
+                "search-1688.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://distributor.taobao.global/apps/order/list?order*"
+            ],
+            "js": [
+                "search-tb.js"
             ],
             "run_at": "document_end"
         },
@@ -33,7 +51,7 @@
                 "https://weidian.com/user/order-new/logistics.php?oid=*"
             ],
             "js": [
-                "search.js"
+                "search-wd.js"
             ],
             "run_at": "document_end"
         }

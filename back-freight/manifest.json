@@ -1,7 +1,7 @@
 {
-    "name": "bbd-1688快递回填",
-    "description": "1.3修复一个订单号多条物流问题，1.4过滤商品特殊sku问题",
-    "version": "1.4",
+    "name": "批量填入运费",
+    "description": "财务专用",
+    "version": "1.0",
     "manifest_version": 3,
     "icons": {
         "16": "icons/icon16.png",
@@ -21,10 +21,10 @@
     "content_scripts": [
         {
             "matches": [
-                "https://trade.1688.com/order*"
+                "https://bbdbuy.com/admins6e5zkx.php/sendorder/lists?order*"
             ],
             "js": [
-                "order.js"
+                "write.js"
             ],
             "run_at": "document_end"
         }
