@@ -25,48 +25,76 @@ try {
     const iframes = document.querySelectorAll('iframe');
     const iframe = iframes[iframes.length - 1];
     if (iframe) {
+        // 获取iframe中的元素，整个订单表是放在iframe中的
         const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-        // 获取iframe中的元素
-        // console.log(iframeDocument);
-        // 筛选title
-        let inputIndex
+        // 获取 商品信息 跟踪号/快递公司 列的index
+        let inputIndex 
         let goodsIndex
-        const titles = Array.from(iframeDocument.querySelectorAll('th[data-field]'))
-        titles.forEach((title, index) => {
-            if (title.textContent == '跟踪号/快递公司') {
+        iframeDocument.querySelectorAll('th[data-field]').forEach((title, index) => {
+            const text = title.textContent.trim()
+            if (text === '跟踪号/快递公司') {
                 inputIndex = index
-            }
-            if (title.textContent == '商品名称') {
+            } else if (text === '商品名称') {
                 goodsIndex = index
             }
         })
-        //过滤掉 没有订单号 有快递单号 商品sku正常 的商品行
+        console.log('跟踪号/快递公司 Index', inputIndex);
+        console.log('商品名称 goodsIndex', goodsIndex);
+
+        //筛选出 有采购编号 没有快递单号 有sku 的商品行
         const goods = Array.from(iframeDocument.querySelectorAll('tr[data-index]')).filter(tr => {
-            // const item = tr.querySelectorAll('td')[goodsIndex].querySelectorAll('a')[0].href.includes('weidian')
-            const item = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[3].value
-            const hasOrderValue = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[0].value
-            const hasSku = tr.querySelectorAll('td')[goodsIndex]
-                .querySelectorAll('small')[1]
-            return hasOrderValue && !item && hasSku
-        }
-        )
-        console.log('goods', goods);
+            const cells = tr.cells
+            const inputCell = cells[inputIndex]
+            const goodsCell = cells[goodsIndex]
+
+            if (!inputCell || !goodsCell) return false
+
+            const inputs = inputCell.querySelectorAll('input')
+            const hasOrderValue = inputs[0]?.value
+            const hasTrackingNo = inputs[3]?.value
+            //  有采购编号 没有快递单号
+            if (!hasOrderValue || hasTrackingNo) return false
+
+            // small0是红色的sku，1是正常的sku
+            const hasSku = goodsCell.querySelectorAll('small').length
+            return !!hasSku
+        })
+        console.log('有采购编号 没有快递单号 有sku 的商品行', goods);
 
         // 初始化快递单号map
-        goods.forEach((good, index) => {
-            const link = good.querySelectorAll('td')[goodsIndex].querySelectorAll('a')[0].href
-            const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
-            console.log('type', type);
+        goods.forEach((good) => {
+            const cells = good.cells
+            const goodsCell = cells[goodsIndex]
+            const inputCell = cells[inputIndex]
 
-            const goodname = getOwnTextOnly(good.querySelectorAll('td')[goodsIndex].querySelector('.goodsname'))
-            // console.log('goodname', goodname);
-            const sku = cleanText(good.querySelectorAll('td')[goodsIndex]
-                .querySelectorAll('small')[1].innerHTML.split('<br>')
-                .map(item => item.split(':')[1])
-                .filter(item => item).join(''))
+            const link = goodsCell.querySelector('a')?.href || ''
+            const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
+            // console.log('商品类型', type);
+
+            let goodname = getOwnTextOnly(goodsCell.querySelector('.goodsname'))
+            if (!goodname) {
+                const linkText = goodsCell.querySelector('.goodsname a')?.textContent || ''
+                goodname = cleanText(linkText)
+            }
+            // console.log('商品名称', goodname);
+
+            const smalls = goodsCell.querySelectorAll('small')
+            const skuEl = smalls[1] || smalls[0]
+            const skuHtml = skuEl?.innerHTML || ''
+            
+            const skuText = skuHtml.split('<br>')
+                .map(item => {
+                    const parts = item.split(/[:：]/)
+                    return parts.length > 1 ? parts[1] : parts[0]
+                })
+                .filter(item => item)
+                .join('')
+                
+            const sku = cleanText(skuText)
             // console.log('sku', sku);
-            const order = good.querySelectorAll('td')[inputIndex].querySelector('input').value
-            // console.log('order', order);
+
+            const order = inputCell.querySelector('input').value
+            // console.log('采购编号', order);
 
             if (goodname && order && sku) {
                 const key = `${order}_${goodname}_${sku}_${type}`
@@ -78,33 +106,33 @@ try {
             const keyArr = Object.keys(data)
             console.log('keyArr', keyArr);
             if (confirm(`共获取${keyArr.length}个可查商品信息，是否进入查找页面获取快递单号`)) {
-                keyArr.forEach(key => {
-                    const type = key.split('_')[3]
+                const PLATFORMS = {
+                    '1688': {
+                        url: 'https://trade.1688.com/order/buyer_order_print.htm',
+                        idKey: 'order_id'
+                    },
+                    'tb': {
+                        url: 'https://distributor.taobao.global/apps/order/list',
+                        idKey: 'order'
+                    },
+                    'wd': {
+                        url: 'https://weidian.com/user/order-new/logistics.php',
+                        idKey: 'oid'
+                    }
+                };
 
-                    if (type == '1688') {
+                keyArr.forEach(key => {
+                    const [orderId, goodname, sku, type] = key.split('_');
+                    const config = PLATFORMS[type];
+
+                    if (config) {
                         const params = new URLSearchParams({
-                            order_id: key.split('_')[0],
-                            goodname: key.split('_')[1],
-                            sku: key.split('_')[2],
+                            [config.idKey]: orderId,
+                            goodname,
+                            sku,
                             type
                         });
-                        window.open(`https://trade.1688.com/order/buyer_order_print.htm?${params.toString()}`, '_blank');
-                    } else if (type == 'tb') {
-                        const params = new URLSearchParams({
-                            order: key.split('_')[0],
-                            goodname: key.split('_')[1],
-                            sku: key.split('_')[2],
-                            type
-                        });
-                        window.open(`https://distributor.taobao.global/apps/order/list?${params.toString()}`, '_blank');
-                    } else if (type == 'wd') {
-                        const params = new URLSearchParams({
-                            oid: key.split('_')[0],
-                            goodname: key.split('_')[1],
-                            sku: key.split('_')[2],
-                            type
-                        });
-                        window.open(`https://weidian.com/user/order-new/logistics.php?${params.toString()}`, '_blank');
+                        window.open(`${config.url}?${params.toString()}`, '_blank');
                     }
                 })
                 console.log('用户点击了“确定”');

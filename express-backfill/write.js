@@ -23,6 +23,10 @@ try {
             const btn = item.querySelector('.btn-success')
             return btn
         })
+        const closebtns = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe')).map(item => {
+            const btn = item.querySelector('.layui-layer-close')
+            return btn
+        })
         const btnclick = (i) => {
             btns.forEach((item, index) => {
                 if (index == i) {
@@ -30,10 +34,24 @@ try {
                 }
             })
         }
+        const closebtnclick = (i) => {
+            closebtns.forEach((item, index) => {
+                if (index == i) {
+                    item.click()
+                }
+            })
+        }
         models.forEach((model, index) => {
             const fastMailInput = model.querySelectorAll('input')[1]
-            fastMailInput.value = model.dataset.fastMail
-            btnclick(index)
+
+            if (fastMailInput) {
+                fastMailInput.value = model.dataset.fastMail
+                btnclick(index)
+            } else {
+                // 如果拿不到
+                console.log('close!!!');
+                closebtnclick(index)
+            }
         })
     } else {
         console.log('iframe not found');

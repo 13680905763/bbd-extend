@@ -30,7 +30,7 @@ try {
             const item = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[3].value
             const hasOrderValue = tr.querySelectorAll('td')[inputIndex].querySelectorAll('input')[0].value
             const hasSku = tr.querySelectorAll('td')[goodsIndex]
-                .querySelectorAll('small')[1]
+                .querySelectorAll('small').length
             return hasOrderValue && item && hasSku
         }
         )
