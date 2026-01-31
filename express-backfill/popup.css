@@ -40,6 +40,10 @@ body {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3);
 }
+#open2 {
+  background: linear-gradient(135deg, #f63b3b, #fa1919);
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+}
 
 #write {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
@@ -55,4 +59,23 @@ body {
 .tool-button:active {
   transform: translateY(0);
   opacity: 0.9;
+}
+
+/* 分割线 */
+.divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+  margin: 8px 0;
+}
+
+/* 海外版按钮样式 */
+.tool-button.oversea {
+  background: linear-gradient(135deg, #ec4899, #db2777); /* 粉色系 */
+  box-shadow: 0 2px 5px rgba(236, 72, 153, 0.3);
+}
+
+#write_oversea {
+  background: linear-gradient(135deg, #6366f1, #4f46e5); /* 靛蓝色系 */
+  box-shadow: 0 2px 5px rgba(99, 102, 241, 0.3);
 }

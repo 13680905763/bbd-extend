@@ -17,6 +17,7 @@ document.getElementById('open').addEventListener('click', () => {
   ];
   injectScriptToMatchingTabs('open.js', urlPatterns);
 });
+
 document.getElementById('write').addEventListener('click', () => {
   const urlPatterns = [
     'https://baobaoda.dev.1buyo.com/admin/order*',
@@ -35,6 +36,24 @@ document.getElementById('check').addEventListener('click', () => {
     // 添加更多 URL 模式
   ];
   injectScriptToMatchingTabs('check.js', urlPatterns);
+});
+
+document.getElementById('get_oversea').addEventListener('click', () => {
+  const urlPatterns = [
+    'https://baobaoda.dev.1buyo.com/admin/order*',
+    'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
+  ];
+  injectScriptToMatchingTabs('get_oversea.js', urlPatterns);
+});
+
+document.getElementById('write_oversea').addEventListener('click', () => {
+  const urlPatterns = [
+    'https://baobaoda.dev.1buyo.com/admin/order*',
+    'https://bbdbuy.com/admin/order/goods*',
+    'https://bbdbuy.com/admins6e5zkx.php*',
+  ];
+  injectScriptToMatchingTabs('write_oversea.js', urlPatterns);
 });
 
 async function injectScriptToMatchingTabs(scriptFile, urlPattern) {

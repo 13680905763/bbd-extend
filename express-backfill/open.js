@@ -54,129 +54,132 @@ try {
             return !!hasSku
         })
         console.log('goods', goods);
+        const otherModels = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe'))
+        if (otherModels.length) {
+            confirm(`检测到${otherModels.length}个其他操作窗口, 请先关闭, 再操作`)
+        } else {
+            chrome.storage.local.get(null, (data) => {
+                if (chrome.runtime.lastError) {
+                    console.error('获取失败:', chrome.runtime.lastError);
+                } else {
+                    let initCount = 0
+                    // 清理无效数据
+                    Object.keys(data).forEach(key => {
+                        if (data[key] == 'init' || !data[key]) {
+                            console.log('删除无效数据', key);
+                            initCount++
+                            chrome.storage.local.remove(key);
+                        }
+                    });
+
+                    chrome.storage.local.get(null, (data) => {
+                        const validKeys = Object.keys(data)
+                        if (validKeys.length === 0) {
+                            confirm(`${initCount}个无效信息（无快递单号）`)
+                            console.log('没有获取到有效的物流信息');
+                            return;
+                        }
+
+                        if (confirm(`已获取${validKeys.length}个商品物流信息信息，${initCount}个无效信息（无快递单号），确定已打开弹窗`)) {
+                            const filtergood = goods.filter((good) => {
+                                const cells = good.cells
+                                const goodsCell = cells[goodsIndex]
+                                const inputCell = cells[inputIndex]
+
+                                const link = goodsCell.querySelector('a')?.href || ''
+                                const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
+
+                                let goodname = getOwnTextOnly(goodsCell.querySelector('.goodsname'))
+                                if (!goodname) {
+                                    const linkText = goodsCell.querySelector('.goodsname a')?.textContent || ''
+                                    goodname = cleanText(linkText)
+                                }
+
+                                const smalls = goodsCell.querySelectorAll('small')
+                                const skuEl = smalls[1] || smalls[0]
+                                const skuHtml = skuEl?.innerHTML || ''
+
+                                const skuText = skuHtml.split('<br>')
+                                    .map(item => {
+                                        const parts = item.split(/[:：]/)
+                                        return parts.length > 1 ? parts[1] : parts[0]
+                                    })
+                                    .filter(item => item)
+                                    .join('')
+                                const sku = cleanText(skuText)
+
+                                const order = inputCell.querySelector('input').value
+                                // console.log(goodname, order, sku);
+
+                                if (goodname && order && sku) {
+                                    const key = `${order}_${goodname}_${sku}_${type}`
+                                    return data.hasOwnProperty(key)
+                                }
+                                return false
+                            })
 
 
-        chrome.storage.local.get(null, (data) => {
-            if (chrome.runtime.lastError) {
-                console.error('获取失败:', chrome.runtime.lastError);
-            } else {
-                let initCount = 0
-                // 清理无效数据
-                Object.keys(data).forEach(key => {
-                    if (data[key] == 'init' || !data[key]) {
-                        console.log('删除无效数据', key);
-                        initCount++
-                        chrome.storage.local.remove(key);
-                    }
-                });
+                            filtergood.forEach((good, index) => {
+                                const cells = good.cells
+                                const goodsCell = cells[goodsIndex]
+                                const inputCell = cells[inputIndex]
+                                const openbtn = inputCell.querySelectorAll('a')[1] ?? inputCell.querySelectorAll('a')[0]
+                                const link = goodsCell.querySelector('a')?.href || ''
+                                const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
 
-                chrome.storage.local.get(null, (data) => {
-                    const validKeys = Object.keys(data)
-                    if (validKeys.length === 0) {
-                        confirm(`${initCount}个无效信息（无快递单号）`)
-                        console.log('没有获取到有效的物流信息');
-                        return;
-                    }
+                                let goodname = getOwnTextOnly(goodsCell.querySelector('.goodsname'))
+                                if (!goodname) {
+                                    const linkText = goodsCell.querySelector('.goodsname a')?.textContent || ''
+                                    goodname = cleanText(linkText)
+                                }
 
-                    if (confirm(`已获取${validKeys.length}个商品物流信息信息，${initCount}个无效信息（无快递单号），确定已打开弹窗`)) {
-                        const filtergood = goods.filter((good) => {
-                            const cells = good.cells
-                            const goodsCell = cells[goodsIndex]
-                            const inputCell = cells[inputIndex]
+                                const smalls = goodsCell.querySelectorAll('small')
+                                const skuEl = smalls[1] || smalls[0]
+                                const skuHtml = skuEl?.innerHTML || ''
 
-                            const link = goodsCell.querySelector('a')?.href || ''
-                            const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
+                                const skuText = skuHtml.split('<br>')
+                                    .map(item => {
+                                        const parts = item.split(/[:：]/)
+                                        return parts.length > 1 ? parts[1] : parts[0]
+                                    })
+                                    .filter(item => item)
+                                    .join('')
+                                const sku = cleanText(skuText)
 
-                            let goodname = getOwnTextOnly(goodsCell.querySelector('.goodsname'))
-                            if (!goodname) {
-                                const linkText = goodsCell.querySelector('.goodsname a')?.textContent || ''
-                                goodname = cleanText(linkText)
-                            }
+                                const order = inputCell.querySelector('input').value
+                                console.log(goodname, order, sku);
 
-                            const smalls = goodsCell.querySelectorAll('small')
-                            const skuEl = smalls[1] || smalls[0]
-                            const skuHtml = skuEl?.innerHTML || ''
+                                if (goodname && order && sku) {
+                                    const key = `${order}_${goodname}_${sku}_${type}`
+                                    if (data.hasOwnProperty(key)) {
+                                        console.log('快递号', data[key]);
+                                        if (openbtn) openbtn.click()
+                                        // console.log('openbtn', openbtn);
 
-                            const skuText = skuHtml.split('<br>')
-                                .map(item => {
-                                    const parts = item.split(/[:：]/)
-                                    return parts.length > 1 ? parts[1] : parts[0]
-                                })
-                                .filter(item => item)
-                                .join('')
-                            const sku = cleanText(skuText)
+                                        // 注意：这里使用的是iframeDocument，可能需要根据实际弹窗生成位置调整
+                                        const models = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe'))
+                                        // 由于 filtergood 是过滤后的数组，index 对应的是 filtergood 的索引
+                                        // 但 models 是页面上所有的弹窗，这里逻辑可能存在风险，需确保弹窗也是按顺序生成的
+                                        // 原始代码是用 index 匹配，这里保持一致
+                                        const model = models[index]
 
-                            const order = inputCell.querySelector('input').value
-                            // console.log(goodname, order, sku);
-
-                            if (goodname && order && sku) {
-                                const key = `${order}_${goodname}_${sku}_${type}`
-                                return data.hasOwnProperty(key)
-                            }
-                            return false
-                        })
-
-
-                        filtergood.forEach((good, index) => {
-                            const cells = good.cells
-                            const goodsCell = cells[goodsIndex]
-                            const inputCell = cells[inputIndex]
-
-                            const openbtn = inputCell.querySelectorAll('a')[1] ?? inputCell.querySelectorAll('a')[0]
-                            const link = goodsCell.querySelector('a')?.href || ''
-                            const type = link.includes('weidian') ? 'wd' : link.includes('taobao') ? 'tb' : '1688'
-
-                            let goodname = getOwnTextOnly(goodsCell.querySelector('.goodsname'))
-                            if (!goodname) {
-                                const linkText = goodsCell.querySelector('.goodsname a')?.textContent || ''
-                                goodname = cleanText(linkText)
-                            }
-
-                            const smalls = goodsCell.querySelectorAll('small')
-                            const skuEl = smalls[1] || smalls[0]
-                            const skuHtml = skuEl?.innerHTML || ''
-
-                            const skuText = skuHtml.split('<br>')
-                                .map(item => {
-                                    const parts = item.split(/[:：]/)
-                                    return parts.length > 1 ? parts[1] : parts[0]
-                                })
-                                .filter(item => item)
-                                .join('')
-                            const sku = cleanText(skuText)
-
-                            const order = inputCell.querySelector('input').value
-                            console.log(goodname, order, sku);
-
-                            if (goodname && order && sku) {
-                                const key = `${order}_${goodname}_${sku}_${type}`
-                                if (data.hasOwnProperty(key)) {
-                                    console.log('快递号', data[key]);
-                                    if (openbtn) openbtn.click()
-                                    // console.log('openbtn', openbtn);
-
-                                    // 注意：这里使用的是iframeDocument，可能需要根据实际弹窗生成位置调整
-                                    const models = Array.from(iframeDocument.querySelectorAll('.layui-layer-iframe'))
-                                    // 由于 filtergood 是过滤后的数组，index 对应的是 filtergood 的索引
-                                    // 但 models 是页面上所有的弹窗，这里逻辑可能存在风险，需确保弹窗也是按顺序生成的
-                                    // 原始代码是用 index 匹配，这里保持一致
-                                    const model = models[index]
-
-                                    if (model) {
-                                        console.log('models', model);
-                                        console.log(key, data, data[key]);
-                                        model.dataset.fastMail = data[key]
+                                        if (model) {
+                                            console.log('models', model);
+                                            console.log(key, data, data[key]);
+                                            model.dataset.fastMail = data[key]
+                                        }
                                     }
                                 }
-                            }
-                        })
-                        console.log('用户点击了“确定”');
-                    } else {
-                        console.log('用户点击了“取消”');
-                    }
-                })
-            }
-        });
+                            })
+                            console.log('用户点击了“确定”');
+                        } else {
+                            console.log('用户点击了“取消”');
+                        }
+                    })
+                }
+            });
+        }
+
     } else {
         console.log('iframe not found');
     }
